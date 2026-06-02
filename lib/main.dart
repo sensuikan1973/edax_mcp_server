@@ -116,7 +116,6 @@ Future<void> main() async {
   }
 
   final libEdax = LibEdax(dllPath);
-  libEdax.libedaxInitialize(['', '-eval-file', evalPath]);
 
   final server = EdaxMcpServer(
     stdioChannel(input: stdin, output: stdout),
@@ -128,5 +127,6 @@ Future<void> main() async {
   );
 
   await server.initialized;
+  libEdax.libedaxInitialize(<String>['', '-eval-file', evalPath]);
   stderr.writeln('Edax MCP Server started');
 }

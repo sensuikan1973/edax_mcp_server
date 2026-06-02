@@ -84,3 +84,17 @@ dart compile exe lib/main.dart -o edax_mcp_server
 ```
 
 その後、設定の `command` を生成されたバイナリのパスに変更し、`args` を空にしてください。
+
+## 開発
+
+### テストの実行
+
+```bash
+dart test
+```
+
+### 静的解析
+
+```bash
+dart analyze
+```
