@@ -36,7 +36,7 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
         name: 'edax_hint',
         description: 'Get suggested moves from Edax engine.',
         inputSchema: ObjectSchema(
-          properties: {
+          properties: <String, Schema>{
             'n': Schema.int(
               description: 'The number of hints to retrieve.',
               minimum: 1,
@@ -70,12 +70,12 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
         name: 'play_move',
         description: 'Play a move in the current game.',
         inputSchema: ObjectSchema(
-          properties: {
+          properties: <String, Schema>{
             'move': Schema.string(
               description: 'The move to play in coordinate format (e.g., f5).',
             ),
           },
-          required: ['move'],
+          required: <String>['move'],
         ),
       ),
       (request) async {
