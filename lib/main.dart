@@ -50,18 +50,21 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
 
         if (hints.isEmpty) {
           return CallToolResult(
-              content: [TextContent(text: 'No hints available.')]);
+            content: [TextContent(text: 'No hints available.')],
+          );
         }
 
         final buffer = StringBuffer();
         for (var i = 0; i < hints.length; i++) {
           final h = hints[i];
           buffer.writeln(
-              'Hint ${i + 1}: Move ${h.moveString}, Score ${h.scoreString} (Depth: ${h.depth})');
+            'Hint ${i + 1}: Move ${h.moveString}, Score ${h.scoreString} (Depth: ${h.depth})',
+          );
         }
 
         return CallToolResult(
-            content: [TextContent(text: buffer.toString().trim())]);
+          content: [TextContent(text: buffer.toString().trim())],
+        );
       },
     );
   }
@@ -99,10 +102,7 @@ Future<void> main() async {
 
   final server = EdaxMcpServer(
     stdioChannel(input: stdin, output: stdout),
-    implementation: Implementation(
-      name: 'edax_mcp_server',
-      version: '0.0.1',
-    ),
+    implementation: Implementation(name: 'edax_mcp_server', version: '0.0.1'),
     libEdax: libEdax,
   );
 
