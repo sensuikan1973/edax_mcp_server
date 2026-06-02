@@ -1,4 +1,4 @@
-import 'package:dart_boilerplate/hello.dart';
+import 'package:dart_boilerplate/main.dart';
 import 'package:test/test.dart';
 
 void main() {
