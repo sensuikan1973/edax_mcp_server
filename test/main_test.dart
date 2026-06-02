@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_boilerplate/main.dart';
+import 'package:edax_mcp_server/main.dart';
 import 'package:dart_mcp/server.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;

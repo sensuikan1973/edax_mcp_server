@@ -1,36 +1,45 @@
 # edax_mcp_server
 
-Edax Othello engine as an MCP (Model Context Protocol) server.
+Edax オセロエンジンを MCP (Model Context Protocol) サーバーとして提供します。
 
-## Requirements
+## 必要条件
 
-- **Dart SDK**: `3.12.0` or higher.
-- **Edax Binaries**: The server requires `libedax` dynamic library and `eval.dat`.
-  - Place dynamic libraries in `resources/dll/` (e.g., `libedax.so`, `libedax.universal.dylib`, `libedax-x64.dll`).
-  - Place `eval.dat` in `resources/data/`.
+- **Dart SDK**: `3.12.0` 以上。
+- **Edax バイナリ**: `libedax` 動的ライブラリと `eval.dat` が必要です。
+  - 動的ライブラリを `resources/dll/` に配置してください (例: `libedax.so`, `libedax.universal.dylib`, `libedax-x64.dll`)。
+  - `eval.dat` を `resources/data/` に配置してください。
 
-## Setup
+## セットアップ
 
-1. Clone this repository.
-2. Install dependencies:
+1. このリポジトリをクローンします。
+2. 依存関係をインストールします:
    ```bash
    dart pub get
    ```
-3. Ensure the Edax binaries are in the `resources/` directory as described above.
+3. 上述の通り、Edax バイナリが `resources/` ディレクトリに配置されていることを確認してください。
 
-## Tools
+## 提供されるツール
 
-The server provides the following tools:
+サーバーは以下のツールを提供します:
 
-- `get_moves`: Get the current game moves in coordinate format (e.g., f5d6c5).
-- `edax_hint`: Get suggested moves from Edax engine.
-  - Arguments: `n` (integer, optional) - Number of hints to retrieve.
-- `play_move`: Play a move in the current game.
-  - Arguments: `move` (string, required) - The move to play (e.g., `f5`).
+- `get_moves`: 現在の棋譜を座標形式で取得します (例: f5d6c5)。
+- `edax_hint`: Edax エンジンによる推奨手（ヒント）を取得します。
+  - 引数: `n` (整数, 任意) - 取得するヒントの数。
+- `play_move`: 指定した手を打ちます。
+  - 引数: `move` (文字列, 必須) - 打つ手 (例: `f5`)。
 
-## Connection to LLM (MCP Client)
+## LLM (MCP クライアント) への接続
 
-To use this server with an MCP client like Claude Desktop, add the following to your `claude_desktop_config.json`:
+### VS Code (GitHub Copilot Chat)
+
+VS Code で GitHub Copilot Chat を使用している場合、`mcp.json` 設定ファイルにサーバーを追加できます。
+
+通常、設定ファイルは以下の場所にあります：
+- **macOS**: `~/Library/Application Support/Code/User/globalStorage/github.copilot-chat/mcp.json`
+- **Windows**: `%AppData%\Code\User\globalStorage\github.copilot-chat\mcp.json`
+- **Linux**: `~/.config/Code/User/globalStorage/github.copilot-chat/mcp.json`
+
+以下のように設定を追加してください：
 
 ```json
 {
@@ -39,45 +48,52 @@ To use this server with an MCP client like Claude Desktop, add the following to 
       "command": "dart",
       "args": [
         "run",
-        "path/to/edax_mcp_server/lib/main.dart"
+        "/絶対パス/to/edax_mcp_server/lib/main.dart"
       ]
     }
   }
 }
 ```
 
-Replace `path/to/edax_mcp_server` with the actual absolute path to your cloned repository.
+### Gemini CLI
 
-### For Production (Compiled)
-
-For better performance, you can compile the server to a native executable:
-
-```bash
-dart compile exe lib/main.dart -o edax_mcp_server
-```
-
-Then update your config:
+Google の `gemini-cli` を使用している場合、`~/.gemini/settings.json` に設定を追加します。
 
 ```json
 {
   "mcpServers": {
     "edax": {
-      "command": "path/to/edax_mcp_server/edax_mcp_server",
-      "args": []
+      "command": "dart",
+      "args": [
+        "run",
+        "/絶対パス/to/edax_mcp_server/lib/main.dart"
+      ]
     }
   }
 }
 ```
 
-## Development
+設定後、Gemini CLI を再起動し、`/mcp list` コマンドで接続を確認できます。
 
-### Run tests
+### 本番環境用 (コンパイル済みバイナリ)
+
+パフォーマンス向上のため、サーバーをネイティブ実行ファイルにコンパイルして使用することをお勧めします：
+
+```bash
+dart compile exe lib/main.dart -o edax_mcp_server
+```
+
+その後、設定の `command` を生成されたバイナリのパスに変更し、`args` を空にしてください。
+
+## 開発
+
+### テストの実行
 
 ```bash
 dart test
 ```
 
-### Static analysis
+### 静的解析
 
 ```bash
 dart analyze
