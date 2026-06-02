@@ -15,6 +15,7 @@ dependencies:
   libedax4dart: ^7.67.0
   meta: ^1.18.2
   path: ^1.9.1
+  stream_channel: ^2.1.4
 
 dev_dependencies:
   analyzer: ^13.0.0
