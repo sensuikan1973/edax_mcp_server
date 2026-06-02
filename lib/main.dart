@@ -5,15 +5,16 @@ import 'package:dart_mcp/server.dart';
 import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
+import 'package:stream_channel/stream_channel.dart';
 
 base class EdaxMcpServer extends MCPServer with ToolsSupport {
   final LibEdax libEdax;
 
   EdaxMcpServer(
-    super.channel, {
-    required super.implementation,
+    StreamChannel<String> channel, {
+    required Implementation implementation,
     required this.libEdax,
-  }) : super.fromStreamChannel() {
+  }) : super.fromStreamChannel(channel, implementation: implementation) {
     _registerTools();
   }
 
@@ -50,21 +51,39 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
 
         if (hints.isEmpty) {
           return CallToolResult(
-            content: [TextContent(text: 'No hints available.')],
-          );
+              content: [TextContent(text: 'No hints available.')]);
         }
 
         final buffer = StringBuffer();
         for (var i = 0; i < hints.length; i++) {
           final h = hints[i];
           buffer.writeln(
-            'Hint ${i + 1}: Move ${h.moveString}, Score ${h.scoreString} (Depth: ${h.depth})',
-          );
+              'Hint ${i + 1}: Move ${h.moveString}, Score ${h.scoreString} (Depth: ${h.depth})');
         }
 
         return CallToolResult(
-          content: [TextContent(text: buffer.toString().trim())],
-        );
+            content: [TextContent(text: buffer.toString().trim())]);
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'play_move',
+        description: 'Play a move in the current game.',
+        inputSchema: ObjectSchema(
+          properties: {
+            'move': Schema.string(
+              description: 'The move to play in coordinate format (e.g., f5).',
+            ),
+          },
+          required: ['move'],
+        ),
+      ),
+      (request) async {
+        final move = request.arguments!['move'] as String;
+        libEdax.edaxMove(move);
+        return CallToolResult(
+            content: [TextContent(text: 'Played move: $move')]);
       },
     );
   }
@@ -102,7 +121,10 @@ Future<void> main() async {
 
   final server = EdaxMcpServer(
     stdioChannel(input: stdin, output: stdout),
-    implementation: Implementation(name: 'edax_mcp_server', version: '0.0.1'),
+    implementation: Implementation(
+      name: 'edax_mcp_server',
+      version: '0.0.1',
+    ),
     libEdax: libEdax,
   );
 
