@@ -1,0 +1,20 @@
+---
+# See: https://github.com/crate-ci/typos/blob/master/docs/github-action.md
+
+name: typos
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  typos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: crate-ci/typos@master
+        with:
+          config: .typos.toml
