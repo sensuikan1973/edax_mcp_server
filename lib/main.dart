@@ -5,16 +5,15 @@ import 'package:dart_mcp/server.dart';
 import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
-import 'package:stream_channel/stream_channel.dart';
 
 base class EdaxMcpServer extends MCPServer with ToolsSupport {
   final LibEdax libEdax;
 
   EdaxMcpServer(
-    StreamChannel<String> channel, {
-    required Implementation implementation,
+    super.channel, {
+    required super.implementation,
     required this.libEdax,
-  }) : super.fromStreamChannel(channel, implementation: implementation) {
+  }) : super.fromStreamChannel() {
     _registerTools();
   }
 
