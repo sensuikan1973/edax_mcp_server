@@ -13,12 +13,11 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
     super.channel, {
     required super.implementation,
     required this.libEdax,
-  }) : super.fromStreamChannel();
+  }) : super.fromStreamChannel() {
+    _registerTools();
+  }
 
-  @override
-  FutureOr<InitializeResult> initialize(InitializeRequest request) async {
-    final result = await super.initialize(request);
-
+  void _registerTools() {
     registerTool(
       Tool(
         name: 'get_moves',
@@ -65,8 +64,6 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
             content: [TextContent(text: buffer.toString().trim())]);
       },
     );
-
-    return result;
   }
 }
 
