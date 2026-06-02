@@ -69,14 +69,14 @@ void main() {
     test('get_moves tool returns current moves', () async {
       // 1. Initialize
       final initId = 1;
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'id': initId,
         'method': 'initialize',
-        'params': {
+        'params': <String, dynamic>{
           'protocolVersion': '2024-11-05',
-          'capabilities': {},
-          'clientInfo': {'name': 'test-client', 'version': '1.0.0'}
+          'capabilities': <String, dynamic>{},
+          'clientInfo': <String, String>{'name': 'test-client', 'version': '1.0.0'}
         }
       }));
 
@@ -84,7 +84,7 @@ void main() {
       await serverResponses.firstWhere((m) => m['id'] == initId);
 
       // 2. Initialized notification
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'method': 'notifications/initialized'
       }));
@@ -93,13 +93,13 @@ void main() {
 
       // 3. Call get_moves
       final callId = 2;
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'id': callId,
         'method': 'tools/call',
-        'params': {
+        'params': <String, dynamic>{
           'name': 'get_moves',
-          'arguments': {}
+          'arguments': <String, dynamic>{}
         }
       }));
 
@@ -112,20 +112,20 @@ void main() {
     test('edax_hint tool returns hints', () async {
       // 1. Initialize
       final initId = 1;
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'id': initId,
         'method': 'initialize',
-        'params': {
+        'params': <String, dynamic>{
           'protocolVersion': '2024-11-05',
-          'capabilities': {},
-          'clientInfo': {'name': 'test-client', 'version': '1.0.0'}
+          'capabilities': <String, dynamic>{},
+          'clientInfo': <String, String>{'name': 'test-client', 'version': '1.0.0'}
         }
       }));
 
       await serverResponses.firstWhere((m) => m['id'] == initId);
 
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'method': 'notifications/initialized'
       }));
@@ -134,13 +134,13 @@ void main() {
 
       // 2. Call edax_hint
       final callId = 2;
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'id': callId,
         'method': 'tools/call',
-        'params': {
+        'params': <String, dynamic>{
           'name': 'edax_hint',
-          'arguments': {'n': 2}
+          'arguments': <String, dynamic>{'n': 2}
         }
       }));
 
@@ -155,20 +155,20 @@ void main() {
     test('play_move tool plays a move', () async {
       // 1. Initialize
       final initId = 1;
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'id': initId,
         'method': 'initialize',
-        'params': {
+        'params': <String, dynamic>{
           'protocolVersion': '2024-11-05',
-          'capabilities': {},
-          'clientInfo': {'name': 'test-client', 'version': '1.0.0'}
+          'capabilities': <String, dynamic>{},
+          'clientInfo': <String, String>{'name': 'test-client', 'version': '1.0.0'}
         }
       }));
 
       await serverResponses.firstWhere((m) => m['id'] == initId);
 
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'method': 'notifications/initialized'
       }));
@@ -177,13 +177,13 @@ void main() {
 
       // 2. Play move
       final callId = 2;
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'id': callId,
         'method': 'tools/call',
-        'params': {
+        'params': <String, dynamic>{
           'name': 'play_move',
-          'arguments': {'move': 'f5'}
+          'arguments': <String, dynamic>{'move': 'f5'}
         }
       }));
 
@@ -193,13 +193,13 @@ void main() {
 
       // 3. Verify move is played
       final callId2 = 3;
-      clientToServer.add(jsonEncode({
+      clientToServer.add(jsonEncode(<String, dynamic>{
         'jsonrpc': '2.0',
         'id': callId2,
         'method': 'tools/call',
-        'params': {
+        'params': <String, dynamic>{
           'name': 'get_moves',
-          'arguments': {}
+          'arguments': <String, dynamic>{}
         }
       }));
 

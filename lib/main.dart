@@ -5,16 +5,15 @@ import 'package:dart_mcp/server.dart';
 import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
-import 'package:stream_channel/stream_channel.dart';
 
 base class EdaxMcpServer extends MCPServer with ToolsSupport {
   final LibEdax libEdax;
 
   EdaxMcpServer(
-    StreamChannel<String> channel, {
-    required Implementation implementation,
+    super.channel, {
+    required super.implementation,
     required this.libEdax,
-  }) : super.fromStreamChannel(channel, implementation: implementation) {
+  }) : super.fromStreamChannel() {
     _registerTools();
   }
 
@@ -24,7 +23,7 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
         name: 'get_moves',
         description:
             'Get the current game moves in coordinate format (e.g., f5d6c5).',
-        inputSchema: ObjectSchema(properties: {}),
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
       ),
       (request) async {
         final moves = libEdax.edaxGetMoves();
