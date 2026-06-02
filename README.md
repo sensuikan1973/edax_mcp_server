@@ -2,5 +2,4 @@
 
 template repository for Dart project
 
-![Dart CI](https://github.com/sensuikan1973/dart-boilerplate/workflows/Dart%20CI/badge.svg)
-[![codecov](https://codecov.io/gh/sensuikan1973/dart-boilerplate/branch/main/graph/badge.svg?token=0EE7KZ8DVJ)](https://codecov.io/gh/sensuikan1973/dart-boilerplate)
+![Dart CI](https://github.com/sensuikan1973/edax_mcp_server/workflows/Dart%20CI/badge.svg)
