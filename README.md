@@ -1,22 +1,6 @@
 # edax_mcp_server
 
-Edax オセロエンジンを MCP (Model Context Protocol) サーバーとして提供します。
-
-## 必要条件
-
-- **Dart SDK**: `3.12.0` 以上。
-- **Edax バイナリ**: `libedax` 動的ライブラリと `eval.dat` が必要です。
-  - 動的ライブラリを `resources/dll/` に配置してください (例: `libedax.so`, `libedax.universal.dylib`, `libedax-x64.dll`)。
-  - `eval.dat` を `resources/data/` に配置してください。
-
-## セットアップ
-
-1. このリポジトリをクローンします。
-2. 依存関係をインストールします:
-   ```bash
-   dart pub get
-   ```
-3. 上述の通り、Edax バイナリが `resources/` ディレクトリに配置されていることを確認してください。
+Edax Reversi エンジンを MCP (Model Context Protocol) サーバーとして提供します。
 
 ## 提供されるツール
 
@@ -28,7 +12,7 @@ Edax オセロエンジンを MCP (Model Context Protocol) サーバーとして
 - `play_move`: 指定した手を打ちます。
   - 引数: `move` (文字列, 必須) - 打つ手 (例: `f5`)。
 
-## LLM (MCP クライアント) への接続
+## MCP クライアントへの接続
 
 ### VS Code (GitHub Copilot Chat)
 
@@ -84,17 +68,3 @@ dart compile exe lib/main.dart -o edax_mcp_server
 ```
 
 その後、設定の `command` を生成されたバイナリのパスに変更し、`args` を空にしてください。
-
-## 開発
-
-### テストの実行
-
-```bash
-dart test
-```
-
-### 静的解析
-
-```bash
-dart analyze
-```
