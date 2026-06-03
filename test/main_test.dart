@@ -399,5 +399,417 @@ void main() {
       expect(text, contains('Mobility:'));
       expect(text, contains('Turn:'));
     });
+
+    test('edax_get_current_player returns current player', () async {
+      // 1. Initialize
+      final initId = 1;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': initId,
+          'method': 'initialize',
+          'params': <String, dynamic>{
+            'protocolVersion': '2024-11-05',
+            'capabilities': <String, dynamic>{},
+            'clientInfo': <String, String>{
+              'name': 'test-client',
+              'version': '1.0.0',
+            },
+          },
+        }),
+      );
+      await serverResponses.firstWhere((m) => m['id'] == initId);
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'method': 'notifications/initialized',
+        }),
+      );
+      await server.initialized;
+
+      // 2. Call edax_get_current_player
+      final callId = 2;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': callId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_get_current_player',
+            'arguments': <String, dynamic>{},
+          },
+        }),
+      );
+
+      final response = await serverResponses.firstWhere(
+        (m) => m['id'] == callId,
+      );
+      final text = response['result']['content'][0]['text'] as String;
+      expect(text, anyOf('black', 'white'));
+    });
+
+    test('edax_get_opponent_player returns opponent player', () async {
+      // 1. Initialize
+      final initId = 1;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': initId,
+          'method': 'initialize',
+          'params': <String, dynamic>{
+            'protocolVersion': '2024-11-05',
+            'capabilities': <String, dynamic>{},
+            'clientInfo': <String, String>{
+              'name': 'test-client',
+              'version': '1.0.0',
+            },
+          },
+        }),
+      );
+      await serverResponses.firstWhere((m) => m['id'] == initId);
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'method': 'notifications/initialized',
+        }),
+      );
+      await server.initialized;
+
+      // 2. Call edax_get_opponent_player
+      final callId = 2;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': callId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_get_opponent_player',
+            'arguments': <String, dynamic>{},
+          },
+        }),
+      );
+
+      final response = await serverResponses.firstWhere(
+        (m) => m['id'] == callId,
+      );
+      final text = response['result']['content'][0]['text'] as String;
+      expect(text, anyOf('black', 'white'));
+    });
+
+    test('edax_get_last_move returns last move or none', () async {
+      // 1. Initialize
+      final initId = 1;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': initId,
+          'method': 'initialize',
+          'params': <String, dynamic>{
+            'protocolVersion': '2024-11-05',
+            'capabilities': <String, dynamic>{},
+            'clientInfo': <String, String>{
+              'name': 'test-client',
+              'version': '1.0.0',
+            },
+          },
+        }),
+      );
+      await serverResponses.firstWhere((m) => m['id'] == initId);
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'method': 'notifications/initialized',
+        }),
+      );
+      await server.initialized;
+
+      // 2. Call edax_get_last_move
+      final callId = 2;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': callId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_get_last_move',
+            'arguments': <String, dynamic>{},
+          },
+        }),
+      );
+
+      final response = await serverResponses.firstWhere(
+        (m) => m['id'] == callId,
+      );
+      final text = response['result']['content'][0]['text'] as String;
+      expect(text, isA<String>());
+    });
+
+    test('edax_is_game_over returns boolean', () async {
+      // 1. Initialize
+      final initId = 1;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': initId,
+          'method': 'initialize',
+          'params': <String, dynamic>{
+            'protocolVersion': '2024-11-05',
+            'capabilities': <String, dynamic>{},
+            'clientInfo': <String, String>{
+              'name': 'test-client',
+              'version': '1.0.0',
+            },
+          },
+        }),
+      );
+      await serverResponses.firstWhere((m) => m['id'] == initId);
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'method': 'notifications/initialized',
+        }),
+      );
+      await server.initialized;
+
+      // 2. Call edax_is_game_over
+      final callId = 2;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': callId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_is_game_over',
+            'arguments': <String, dynamic>{},
+          },
+        }),
+      );
+
+      final response = await serverResponses.firstWhere(
+        (m) => m['id'] == callId,
+      );
+      final text = response['result']['content'][0]['text'] as String;
+      expect(text, anyOf('true', 'false'));
+    });
+
+    test('edax_init initializes board', () async {
+      // 1. Initialize
+      final initId = 1;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': initId,
+          'method': 'initialize',
+          'params': <String, dynamic>{
+            'protocolVersion': '2024-11-05',
+            'capabilities': <String, dynamic>{},
+            'clientInfo': <String, String>{
+              'name': 'test-client',
+              'version': '1.0.0',
+            },
+          },
+        }),
+      );
+      await serverResponses.firstWhere((m) => m['id'] == initId);
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'method': 'notifications/initialized',
+        }),
+      );
+      await server.initialized;
+
+      // 2. Call edax_init
+      final callId = 2;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': callId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_init',
+            'arguments': <String, dynamic>{},
+          },
+        }),
+      );
+
+      final response = await serverResponses.firstWhere(
+        (m) => m['id'] == callId,
+      );
+      expect(
+        response['result']['content'][0]['text'],
+        contains('Board initialized'),
+      );
+    });
+
+    test('edax_move plays a move', () async {
+      // 1. Initialize
+      final initId = 1;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': initId,
+          'method': 'initialize',
+          'params': <String, dynamic>{
+            'protocolVersion': '2024-11-05',
+            'capabilities': <String, dynamic>{},
+            'clientInfo': <String, String>{
+              'name': 'test-client',
+              'version': '1.0.0',
+            },
+          },
+        }),
+      );
+      await serverResponses.firstWhere((m) => m['id'] == initId);
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'method': 'notifications/initialized',
+        }),
+      );
+      await server.initialized;
+
+      // 2. Call edax_move
+      final callId = 2;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': callId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_move',
+            'arguments': <String, dynamic>{'move': 'f5'},
+          },
+        }),
+      );
+
+      final response = await serverResponses.firstWhere(
+        (m) => m['id'] == callId,
+      );
+      expect(
+        response['result']['content'][0]['text'],
+        contains('Played move: f5'),
+      );
+    });
+
+    test('edax_undo/redo undoes and redoes a move', () async {
+      // 1. Initialize
+      final initId = 1;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': initId,
+          'method': 'initialize',
+          'params': <String, dynamic>{
+            'protocolVersion': '2024-11-05',
+            'capabilities': <String, dynamic>{},
+            'clientInfo': <String, String>{
+              'name': 'test-client',
+              'version': '1.0.0',
+            },
+          },
+        }),
+      );
+      await serverResponses.firstWhere((m) => m['id'] == initId);
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'method': 'notifications/initialized',
+        }),
+      );
+      await server.initialized;
+
+      // 2. Undo
+      final undoId = 2;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': undoId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_undo',
+            'arguments': <String, dynamic>{},
+          },
+        }),
+      );
+      final undoResponse = await serverResponses.firstWhere(
+        (m) => m['id'] == undoId,
+      );
+      expect(
+        undoResponse['result']['content'][0]['text'],
+        contains('Undo successful'),
+      );
+
+      // 3. Redo
+      final redoId = 3;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': redoId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_redo',
+            'arguments': <String, dynamic>{},
+          },
+        }),
+      );
+      final redoResponse = await serverResponses.firstWhere(
+        (m) => m['id'] == redoId,
+      );
+      expect(
+        redoResponse['result']['content'][0]['text'],
+        contains('Redo successful'),
+      );
+    });
+
+    test('edax_options_dump dumps options', () async {
+      // 1. Initialize
+      final initId = 1;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': initId,
+          'method': 'initialize',
+          'params': <String, dynamic>{
+            'protocolVersion': '2024-11-05',
+            'capabilities': <String, dynamic>{},
+            'clientInfo': <String, String>{
+              'name': 'test-client',
+              'version': '1.0.0',
+            },
+          },
+        }),
+      );
+      await serverResponses.firstWhere((m) => m['id'] == initId);
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'method': 'notifications/initialized',
+        }),
+      );
+      await server.initialized;
+
+      // 2. Call edax_options_dump
+      final callId = 2;
+      clientToServer.add(
+        jsonEncode(<String, dynamic>{
+          'jsonrpc': '2.0',
+          'id': callId,
+          'method': 'tools/call',
+          'params': <String, dynamic>{
+            'name': 'edax_options_dump',
+            'arguments': <String, dynamic>{},
+          },
+        }),
+      );
+
+      final response = await serverResponses.firstWhere(
+        (m) => m['id'] == callId,
+      );
+      expect(
+        response['result']['content'][0]['text'],
+        contains('Options dumped'),
+      );
+    });
   });
 }

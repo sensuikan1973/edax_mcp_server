@@ -279,6 +279,160 @@ base class EdaxMcpServer extends MCPServer
         );
       },
     );
+
+    registerTool(
+      Tool(
+        name: 'edax_get_current_player',
+        description: 'Get the current player (black or white).',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        final player = libEdax.edaxGetCurrentPlayer();
+        final colorStr = player == TurnColor.black ? 'black' : 'white';
+        return CallToolResult(
+          content: <Content>[TextContent(text: colorStr)],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_get_opponent_player',
+        description: 'Get the opponent player (black or white).',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        final player = libEdax.edaxGetOpponentPlayer();
+        final colorStr = player == TurnColor.black ? 'black' : 'white';
+        return CallToolResult(
+          content: <Content>[TextContent(text: colorStr)],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_get_last_move',
+        description: 'Get the last move in coordinate format (e.g., f5).',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        final move = libEdax.edaxGetLastMove();
+        final moveStr = move.isNoMove ? 'none' : move.moveString;
+        return CallToolResult(
+          content: <Content>[TextContent(text: moveStr)],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_is_game_over',
+        description: 'Check if the current game is over.',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        final isGameOver = libEdax.edaxIsGameOver();
+        return CallToolResult(
+          content: <Content>[TextContent(text: isGameOver.toString())],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_init',
+        description: 'Initialize the board.',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        libEdax.edaxInit();
+        return CallToolResult(
+          content: <Content>[TextContent(text: 'Board initialized.')],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_new',
+        description: 'Initialize the board based on the setboard command.',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        libEdax.edaxNew();
+        return CallToolResult(
+          content: <Content>[TextContent(text: 'New board initialized.')],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_move',
+        description: 'Play a move in the current game.',
+        inputSchema: ObjectSchema(
+          properties: <String, Schema>{
+            'move': Schema.string(
+              description: 'The move to play in coordinate format (e.g., f5).',
+            ),
+          },
+          required: <String>['move'],
+        ),
+      ),
+      (request) async {
+        final move = request.arguments!['move'] as String;
+        libEdax.edaxMove(move);
+        return CallToolResult(
+          content: <Content>[TextContent(text: 'Played move: $move')],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_undo',
+        description: 'Undo the last move.',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        libEdax.edaxUndo();
+        return CallToolResult(
+          content: <Content>[TextContent(text: 'Undo successful.')],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_redo',
+        description: 'Redo the last undone move.',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        libEdax.edaxRedo();
+        return CallToolResult(
+          content: <Content>[TextContent(text: 'Redo successful.')],
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'edax_options_dump',
+        description:
+            'Dump Edax engine options. Note: The output might be directed to the server\'s standard error or log stream.',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        libEdax.edaxOptionsDump();
+        return CallToolResult(
+          content: <Content>[
+            TextContent(text: 'Options dumped to standard output/error.')
+          ],
+        );
+      },
+    );
   }
 }
 
