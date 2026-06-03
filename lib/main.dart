@@ -5,15 +5,16 @@ import 'package:dart_mcp/server.dart';
 import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
+import 'package:stream_channel/stream_channel.dart';
 
 base class EdaxMcpServer extends MCPServer with ToolsSupport {
   final LibEdax libEdax;
 
   EdaxMcpServer(
-    super.channel, {
-    required super.implementation,
+    StreamChannel<String> channel, {
+    required Implementation implementation,
     required this.libEdax,
-  }) : super.fromStreamChannel() {
+  }) : super.fromStreamChannel(channel, implementation: implementation) {
     _registerTools();
   }
 
@@ -27,7 +28,8 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
       ),
       (request) async {
         final moves = libEdax.edaxGetMoves();
-        return CallToolResult(content: [TextContent(text: moves)]);
+        return CallToolResult(
+            content: <Content>[TextContent(text: moves)]);
       },
     );
 
@@ -50,7 +52,7 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
 
         if (hints.isEmpty) {
           return CallToolResult(
-              content: [TextContent(text: 'No hints available.')]);
+              content: <Content>[TextContent(text: 'No hints available.')]);
         }
 
         final buffer = StringBuffer();
@@ -61,7 +63,7 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
         }
 
         return CallToolResult(
-            content: [TextContent(text: buffer.toString().trim())]);
+            content: <Content>[TextContent(text: buffer.toString().trim())]);
       },
     );
 
@@ -82,7 +84,111 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
         final move = request.arguments!['move'] as String;
         libEdax.edaxMove(move);
         return CallToolResult(
-            content: [TextContent(text: 'Played move: $move')]);
+            content: <Content>[TextContent(text: 'Played move: $move')]);
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'get_board',
+        description: 'Get the current board state.',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        final board = libEdax.edaxGetBoard();
+        final currentPlayer = libEdax.edaxGetCurrentPlayer();
+        return CallToolResult(
+          content: <Content>[
+            TextContent(text: board.prettyString(currentPlayer)),
+          ],
+          structuredContent: <String, Object?>{
+            'player_bitboard': board.playerRadix16String,
+            'opponent_bitboard': board.opponentRadix16String,
+            'current_player':
+                currentPlayer == TurnColor.black ? 'black' : 'white',
+          },
+        );
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'get_mobility_count',
+        description: 'Get the number of legal moves for a given color.',
+        inputSchema: ObjectSchema(
+          properties: <String, Schema>{
+            'color': Schema.string(
+              description: 'The color (black or white).',
+              enumValues: <String>['black', 'white'],
+            ),
+          },
+          required: <String>['color'],
+        ),
+      ),
+      (request) async {
+        final colorStr = request.arguments!['color'] as String;
+        final color = colorStr.toLowerCase() == 'black'
+            ? TurnColor.black
+            : TurnColor.white;
+        final count = libEdax.edaxGetMobilityCount(color);
+        return CallToolResult(
+            content: <Content>[
+              TextContent(text: 'Mobility count for $colorStr: $count')
+            ]);
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'get_disc_count',
+        description: 'Get the number of discs for a given color.',
+        inputSchema: ObjectSchema(
+          properties: <String, Schema>{
+            'color': Schema.string(
+              description: 'The color (black or white).',
+              enumValues: <String>['black', 'white'],
+            ),
+          },
+          required: <String>['color'],
+        ),
+      ),
+      (request) async {
+        final colorStr = request.arguments!['color'] as String;
+        final color = colorStr.toLowerCase() == 'black'
+            ? TurnColor.black
+            : TurnColor.white;
+        final count = libEdax.edaxGetDisc(color);
+        return CallToolResult(
+            content: <Content>[
+              TextContent(text: 'Disc count for $colorStr: $count')
+            ]);
+      },
+    );
+
+    registerTool(
+      Tool(
+        name: 'play_print',
+        description:
+            'Get a summary of the current game state (board, disc counts, mobility).',
+        inputSchema: ObjectSchema(properties: <String, Schema>{}),
+      ),
+      (request) async {
+        final board = libEdax.edaxGetBoard();
+        final currentPlayer = libEdax.edaxGetCurrentPlayer();
+        final blackDiscs = libEdax.edaxGetDisc(TurnColor.black);
+        final whiteDiscs = libEdax.edaxGetDisc(TurnColor.white);
+        final blackMobility = libEdax.edaxGetMobilityCount(TurnColor.black);
+        final whiteMobility = libEdax.edaxGetMobilityCount(TurnColor.white);
+        final turnStr = currentPlayer == TurnColor.black ? 'Black' : 'White';
+
+        final buffer = StringBuffer();
+        buffer.writeln(board.prettyString(currentPlayer));
+        buffer.writeln('Discs: Black $blackDiscs, White $whiteDiscs');
+        buffer.writeln('Mobility: Black $blackMobility, White $whiteMobility');
+        buffer.writeln('Turn: $turnStr');
+
+        return CallToolResult(
+            content: <Content>[TextContent(text: buffer.toString().trim())]);
       },
     );
   }
@@ -107,39 +213,40 @@ Future<void> main() async {
     stderr.writeln('ベースディレクトリ: $baseDir');
 
     String libName;
-  if (Platform.isLinux) {
-    libName = 'libedax.so';
-  } else if (Platform.isMacOS) {
-    libName = 'libedax.universal.dylib';
-  } else if (Platform.isWindows) {
-    libName = 'libedax-x64.dll';
-  } else {
-    throw UnsupportedError('Unsupported platform: ${Platform.operatingSystem}');
-  }
+    if (Platform.isLinux) {
+      libName = 'libedax.so';
+    } else if (Platform.isMacOS) {
+      libName = 'libedax.universal.dylib';
+    } else if (Platform.isWindows) {
+      libName = 'libedax-x64.dll';
+    } else {
+      throw UnsupportedError(
+          'Unsupported platform: ${Platform.operatingSystem}');
+    }
 
-  final dllPath = p.join(baseDir, 'resources', 'dll', libName);
-  final evalPath = p.join(baseDir, 'resources', 'data', 'eval.dat');
+    final dllPath = p.join(baseDir, 'resources', 'dll', libName);
+    final evalPath = p.join(baseDir, 'resources', 'data', 'eval.dat');
 
-  if (!File(dllPath).existsSync()) {
-    stderr.writeln('Error: Dynamic library not found at $dllPath');
-    exit(1);
-  }
+    if (!File(dllPath).existsSync()) {
+      stderr.writeln('Error: Dynamic library not found at $dllPath');
+      exit(1);
+    }
 
-  if (!File(evalPath).existsSync()) {
-    stderr.writeln('Error: Evaluation data not found at $evalPath');
-    exit(1);
-  }
+    if (!File(evalPath).existsSync()) {
+      stderr.writeln('Error: Evaluation data not found at $evalPath');
+      exit(1);
+    }
 
-  final libEdax = LibEdax(dllPath);
+    final libEdax = LibEdax(dllPath);
 
-  final server = EdaxMcpServer(
-    stdioChannel(input: stdin, output: stdout),
-    implementation: Implementation(
-      name: 'edax_mcp_server',
-      version: '0.0.1',
-    ),
-    libEdax: libEdax,
-  );
+    final server = EdaxMcpServer(
+      stdioChannel(input: stdin, output: stdout),
+      implementation: Implementation(
+        name: 'edax_mcp_server',
+        version: '0.0.1',
+      ),
+      libEdax: libEdax,
+    );
 
     await server.initialized;
     stderr.writeln('MCP の初期化ハンドシェイクが完了しました。Edax エンジンを初期化します...');
