@@ -34,8 +34,8 @@ base class EdaxMcpServer
         final rulesPath = p.join(baseDir, 'resources', 'data', 'rules.txt');
         final content = await File(rulesPath).readAsString();
         return ReadResourceResult(
-          contents: <ResourceContent>[
-            TextResourceContent(text: content, uri: 'othello://rules'),
+          contents: <ResourceContents>[
+            TextResourceContents(text: content, uri: 'othello://rules'),
           ],
         );
       },
