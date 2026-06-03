@@ -1,16 +1,10 @@
 # edax_mcp_server
 
-Edax Reversi エンジンを MCP (Model Context Protocol) サーバーとして提供します。
+Edax Reversi エンジンを MCP サーバーとして提供します。
 
 ## 提供されるツール
 
-サーバーは以下のツールを提供します:
-
-- `get_moves`: 現在の棋譜を座標形式で取得します (例: f5d6c5)。
-- `edax_hint`: Edax エンジンによる推奨手（ヒント）を取得します。
-  - 引数: `n` (整数, 任意) - 取得するヒントの数。
-- `play_move`: 指定した手を打ちます。
-  - 引数: `move` (文字列, 必須) - 打つ手 (例: `f5`)。
+See: [lib/main.dart](./lib/maind.dart)
 
 ## MCP クライアントへの接続
 
