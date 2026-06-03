@@ -6,8 +6,8 @@ import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
 
-base class EdaxMcpServer
-    extends MCPServer with ToolsSupport, ResourcesSupport, PromptsSupport {
+base class EdaxMcpServer extends MCPServer
+    with ToolsSupport, ResourcesSupport, PromptsSupport {
   final LibEdax libEdax;
   final String baseDir;
 
@@ -63,7 +63,8 @@ base class EdaxMcpServer
             PromptMessage(
               role: Role.user,
               content: TextContent(
-                text: 'オセロの$topicについて教えてください。'
+                text:
+                    'オセロの$topicについて教えてください。'
                     '必要に応じて、othello://rules リソースを参照してください。',
               ),
             ),
