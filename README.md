@@ -4,7 +4,7 @@ Edax Reversi エンジンを MCP サーバーとして提供します。
 
 ## 提供されるツール
 
-See: [lib/main.dart](./lib/maind.dart)
+See: [lib/main.dart](./lib/main.dart)
 
 ## MCP クライアントへの接続
 
