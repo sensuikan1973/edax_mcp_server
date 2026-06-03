@@ -40,17 +40,36 @@ base class EdaxMcpServer extends MCPServer
         );
       },
     );
+
+    addResource(
+      Resource(
+        uri: 'othello://mobility',
+        name: '打てる箇所の数（開放度）の価値',
+        description: 'オセロにおける打てる箇所の数（モビリティ）の価値に関する統計的な調査結果です。',
+        mimeType: 'text/plain',
+      ),
+      (request) async {
+        final mobilityPath =
+            p.join(baseDir, 'resources', 'docs', 'mobility.txt');
+        final content = await File(mobilityPath).readAsString();
+        return ReadResourceResult(
+          contents: <ResourceContents>[
+            TextResourceContents(text: content, uri: 'othello://mobility'),
+          ],
+        );
+      },
+    );
   }
 
   void _registerPrompts() {
     addPrompt(
       Prompt(
         name: 'othello_knowledge',
-        description: 'オセロに関する知識（ルール、戦略、統計など）を提供します。',
+        description: 'オセロに関する知識（ルール、戦略、統計、打てる箇所の価値など）を提供します。',
         arguments: <PromptArgument>[
           PromptArgument(
             name: 'topic',
-            description: '知りたいトピック（例：ルール、勝ち方）',
+            description: '知りたいトピック（例：ルール、勝ち方、打てる箇所の価値）',
             required: false,
           ),
         ],
@@ -63,9 +82,10 @@ base class EdaxMcpServer extends MCPServer
             PromptMessage(
               role: Role.user,
               content: TextContent(
-                text:
-                    'オセロの$topicについて教えてください。'
-                    '必要に応じて、othello://rules リソースを参照してください。',
+                text: 'オセロの$topicについて教えてください。'
+                    '必要に応じて、以下のリソースを参照してください：\n'
+                    '- othello://rules : 公式競技ルール\n'
+                    '- othello://mobility : 打てる箇所の数（モビリティ）の価値に関する統計',
               ),
             ),
           ],
