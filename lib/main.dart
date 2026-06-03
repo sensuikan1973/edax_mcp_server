@@ -289,9 +289,7 @@ base class EdaxMcpServer extends MCPServer
       (request) async {
         final player = libEdax.edaxGetCurrentPlayer();
         final colorStr = player == TurnColor.black ? 'black' : 'white';
-        return CallToolResult(
-          content: <Content>[TextContent(text: colorStr)],
-        );
+        return CallToolResult(content: <Content>[TextContent(text: colorStr)]);
       },
     );
 
@@ -304,9 +302,7 @@ base class EdaxMcpServer extends MCPServer
       (request) async {
         final player = libEdax.edaxGetOpponentPlayer();
         final colorStr = player == TurnColor.black ? 'black' : 'white';
-        return CallToolResult(
-          content: <Content>[TextContent(text: colorStr)],
-        );
+        return CallToolResult(content: <Content>[TextContent(text: colorStr)]);
       },
     );
 
@@ -319,9 +315,7 @@ base class EdaxMcpServer extends MCPServer
       (request) async {
         final move = libEdax.edaxGetLastMove();
         final moveStr = move.isNoMove ? 'none' : move.moveString;
-        return CallToolResult(
-          content: <Content>[TextContent(text: moveStr)],
-        );
+        return CallToolResult(content: <Content>[TextContent(text: moveStr)]);
       },
     );
 
@@ -428,7 +422,7 @@ base class EdaxMcpServer extends MCPServer
         libEdax.edaxOptionsDump();
         return CallToolResult(
           content: <Content>[
-            TextContent(text: 'Options dumped to standard output/error.')
+            TextContent(text: 'Options dumped to standard output/error.'),
           ],
         );
       },
