@@ -55,6 +55,7 @@ void main() {
         serverChannel,
         implementation: Implementation(name: 'test_server', version: '0.0.1'),
         libEdax: libEdax,
+        baseDir: Directory.current.path,
       );
     });
 
