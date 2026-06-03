@@ -6,8 +6,8 @@ import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
 
-base class EdaxMcpServer extends MCPServer
-    with ToolsSupport, ResourcesSupport, PromptsSupport {
+base class EdaxMcpServer
+    extends MCPServer with ToolsSupport, ResourcesSupport, PromptsSupport {
   final LibEdax libEdax;
   final String baseDir;
 
@@ -31,7 +31,7 @@ base class EdaxMcpServer extends MCPServer
         mimeType: 'text/plain',
       ),
       (request) async {
-        final rulesPath = p.join(baseDir, 'resources', 'data', 'rules.txt');
+        final rulesPath = p.join(baseDir, 'resources', 'docs', 'rules.txt');
         final content = await File(rulesPath).readAsString();
         return ReadResourceResult(
           contents: <ResourceContents>[
@@ -63,8 +63,7 @@ base class EdaxMcpServer extends MCPServer
             PromptMessage(
               role: Role.user,
               content: TextContent(
-                text:
-                    'オセロの$topicについて教えてください。'
+                text: 'オセロの$topicについて教えてください。'
                     '必要に応じて、othello://rules リソースを参照してください。',
               ),
             ),
