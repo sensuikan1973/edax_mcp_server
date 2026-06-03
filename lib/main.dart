@@ -89,9 +89,24 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
 }
 
 Future<void> main() async {
-  final baseDir = Directory.current.path;
+  try {
+    // スクリプトの場所からプロジェクトのルートディレクトリ（pubspec.yamlがある場所）を探します
+    Directory dir = File(Platform.script.toFilePath()).parent;
+    bool found = false;
+    while (dir.path != dir.parent.path) {
+      if (File(p.join(dir.path, 'pubspec.yaml')).existsSync()) {
+        found = true;
+        break;
+      }
+      dir = dir.parent;
+    }
 
-  String libName;
+    // pubspec.yaml が見つからない場合は、スクリプトの2階層上をベースディレクトリとします
+    final baseDir =
+        found ? dir.path : p.dirname(p.dirname(Platform.script.toFilePath()));
+    stderr.writeln('ベースディレクトリ: $baseDir');
+
+    String libName;
   if (Platform.isLinux) {
     libName = 'libedax.so';
   } else if (Platform.isMacOS) {
@@ -126,7 +141,15 @@ Future<void> main() async {
     libEdax: libEdax,
   );
 
-  await server.initialized;
-  libEdax.libedaxInitialize(<String>['', '-eval-file', evalPath]);
-  stderr.writeln('Edax MCP Server started');
+    await server.initialized;
+    stderr.writeln('MCP の初期化ハンドシェイクが完了しました。Edax エンジンを初期化します...');
+
+    libEdax.libedaxInitialize(<String>['', '-eval-file', evalPath]);
+
+    stderr.writeln('Edax エンジンの初期化が完了しました。サーバーの準備が整いました。');
+  } catch (e, s) {
+    stderr.writeln('サーバー起動中に致命的なエラーが発生しました: $e');
+    stderr.writeln(s);
+    exit(1);
+  }
 }
