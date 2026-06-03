@@ -6,15 +6,71 @@ import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
 
-base class EdaxMcpServer extends MCPServer with ToolsSupport {
+base class EdaxMcpServer
+    extends MCPServer with ToolsSupport, ResourcesSupport, PromptsSupport {
   final LibEdax libEdax;
+  final String baseDir;
 
   EdaxMcpServer(
     super.channel, {
     required super.implementation,
     required this.libEdax,
+    required this.baseDir,
   }) : super.fromStreamChannel() {
     _registerTools();
+    _registerResources();
+    _registerPrompts();
+  }
+
+  void _registerResources() {
+    addResource(
+      Resource(
+        uri: 'othello://rules',
+        name: '日本オセロ連盟競技ルール',
+        description: 'オセロの公式競技ルールです。',
+        mimeType: 'text/plain',
+      ),
+      (request) async {
+        final rulesPath = p.join(baseDir, 'resources', 'data', 'rules.txt');
+        final content = await File(rulesPath).readAsString();
+        return ReadResourceResult(
+          contents: <ResourceContent>[
+            TextResourceContent(text: content, uri: 'othello://rules'),
+          ],
+        );
+      },
+    );
+  }
+
+  void _registerPrompts() {
+    addPrompt(
+      Prompt(
+        name: 'othello_knowledge',
+        description: 'オセロに関する知識（ルール、戦略、統計など）を提供します。',
+        arguments: <PromptArgument>[
+          PromptArgument(
+            name: 'topic',
+            description: '知りたいトピック（例：ルール、勝ち方）',
+            required: false,
+          ),
+        ],
+      ),
+      (request) async {
+        final topic = request.arguments?['topic'] ?? '全体';
+        return GetPromptResult(
+          description: 'オセロの知識に関するプロンプト',
+          messages: <PromptMessage>[
+            PromptMessage(
+              role: Role.user,
+              content: TextContent(
+                text: 'オセロの$topicについて教えてください。'
+                    '必要に応じて、othello://rules リソースを参照してください。',
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _registerTools() {
@@ -251,6 +307,7 @@ Future<void> main() async {
       stdioChannel(input: stdin, output: stdout),
       implementation: Implementation(name: 'edax_mcp_server', version: '0.0.1'),
       libEdax: libEdax,
+      baseDir: baseDir,
     );
 
     await server.initialized;
