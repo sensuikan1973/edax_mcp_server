@@ -52,13 +52,3 @@ Google の `gemini-cli` を使用している場合、`~/.gemini/settings.json` 
 ```
 
 設定後、Gemini CLI を再起動し、`/mcp list` コマンドで接続を確認できます。
-
-### 本番環境用 (コンパイル済みバイナリ)
-
-パフォーマンス向上のため、サーバーをネイティブ実行ファイルにコンパイルして使用することをお勧めします：
-
-```bash
-dart compile exe lib/main.dart -o edax_mcp_server
-```
-
-その後、設定の `command` を生成されたバイナリのパスに変更し、`args` を空にしてください。
