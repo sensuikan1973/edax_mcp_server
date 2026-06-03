@@ -49,8 +49,12 @@ base class EdaxMcpServer extends MCPServer
         mimeType: 'text/plain',
       ),
       (request) async {
-        final mobilityPath =
-            p.join(baseDir, 'resources', 'docs', 'mobility.txt');
+        final mobilityPath = p.join(
+          baseDir,
+          'resources',
+          'docs',
+          'mobility.txt',
+        );
         final content = await File(mobilityPath).readAsString();
         return ReadResourceResult(
           contents: <ResourceContents>[
@@ -82,7 +86,8 @@ base class EdaxMcpServer extends MCPServer
             PromptMessage(
               role: Role.user,
               content: TextContent(
-                text: 'オセロの$topicについて教えてください。'
+                text:
+                    'オセロの$topicについて教えてください。'
                     '必要に応じて、以下のリソースを参照してください：\n'
                     '- othello://rules : 公式競技ルール\n'
                     '- othello://mobility : 打てる箇所の数（モビリティ）の価値に関する統計',
