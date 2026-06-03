@@ -5,16 +5,15 @@ import 'package:dart_mcp/server.dart';
 import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
-import 'package:stream_channel/stream_channel.dart';
 
 base class EdaxMcpServer extends MCPServer with ToolsSupport {
   final LibEdax libEdax;
 
   EdaxMcpServer(
-    StreamChannel<String> channel, {
-    required Implementation implementation,
+    super.channel, {
+    required super.implementation,
     required this.libEdax,
-  }) : super.fromStreamChannel(channel, implementation: implementation) {
+  }) : super.fromStreamChannel() {
     _registerTools();
   }
 
@@ -28,8 +27,7 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
       ),
       (request) async {
         final moves = libEdax.edaxGetMoves();
-        return CallToolResult(
-            content: <Content>[TextContent(text: moves)]);
+        return CallToolResult(content: <Content>[TextContent(text: moves)]);
       },
     );
 
@@ -52,18 +50,21 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
 
         if (hints.isEmpty) {
           return CallToolResult(
-              content: <Content>[TextContent(text: 'No hints available.')]);
+            content: <Content>[TextContent(text: 'No hints available.')],
+          );
         }
 
         final buffer = StringBuffer();
         for (var i = 0; i < hints.length; i++) {
           final h = hints[i];
           buffer.writeln(
-              'Hint ${i + 1}: Move ${h.moveString}, Score ${h.scoreString} (Depth: ${h.depth})');
+            'Hint ${i + 1}: Move ${h.moveString}, Score ${h.scoreString} (Depth: ${h.depth})',
+          );
         }
 
         return CallToolResult(
-            content: <Content>[TextContent(text: buffer.toString().trim())]);
+          content: <Content>[TextContent(text: buffer.toString().trim())],
+        );
       },
     );
 
@@ -84,7 +85,8 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
         final move = request.arguments!['move'] as String;
         libEdax.edaxMove(move);
         return CallToolResult(
-            content: <Content>[TextContent(text: 'Played move: $move')]);
+          content: <Content>[TextContent(text: 'Played move: $move')],
+        );
       },
     );
 
@@ -104,8 +106,9 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
           structuredContent: <String, Object?>{
             'player_bitboard': board.playerRadix16String,
             'opponent_bitboard': board.opponentRadix16String,
-            'current_player':
-                currentPlayer == TurnColor.black ? 'black' : 'white',
+            'current_player': currentPlayer == TurnColor.black
+                ? 'black'
+                : 'white',
           },
         );
       },
@@ -132,9 +135,10 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
             : TurnColor.white;
         final count = libEdax.edaxGetMobilityCount(color);
         return CallToolResult(
-            content: <Content>[
-              TextContent(text: 'Mobility count for $colorStr: $count')
-            ]);
+          content: <Content>[
+            TextContent(text: 'Mobility count for $colorStr: $count'),
+          ],
+        );
       },
     );
 
@@ -159,9 +163,10 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
             : TurnColor.white;
         final count = libEdax.edaxGetDisc(color);
         return CallToolResult(
-            content: <Content>[
-              TextContent(text: 'Disc count for $colorStr: $count')
-            ]);
+          content: <Content>[
+            TextContent(text: 'Disc count for $colorStr: $count'),
+          ],
+        );
       },
     );
 
@@ -188,7 +193,8 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
         buffer.writeln('Turn: $turnStr');
 
         return CallToolResult(
-            content: <Content>[TextContent(text: buffer.toString().trim())]);
+          content: <Content>[TextContent(text: buffer.toString().trim())],
+        );
       },
     );
   }
@@ -208,8 +214,9 @@ Future<void> main() async {
     }
 
     // pubspec.yaml が見つからない場合は、スクリプトの2階層上をベースディレクトリとします
-    final baseDir =
-        found ? dir.path : p.dirname(p.dirname(Platform.script.toFilePath()));
+    final baseDir = found
+        ? dir.path
+        : p.dirname(p.dirname(Platform.script.toFilePath()));
     stderr.writeln('ベースディレクトリ: $baseDir');
 
     String libName;
@@ -221,7 +228,8 @@ Future<void> main() async {
       libName = 'libedax-x64.dll';
     } else {
       throw UnsupportedError(
-          'Unsupported platform: ${Platform.operatingSystem}');
+        'Unsupported platform: ${Platform.operatingSystem}',
+      );
     }
 
     final dllPath = p.join(baseDir, 'resources', 'dll', libName);
@@ -241,10 +249,7 @@ Future<void> main() async {
 
     final server = EdaxMcpServer(
       stdioChannel(input: stdin, output: stdout),
-      implementation: Implementation(
-        name: 'edax_mcp_server',
-        version: '0.0.1',
-      ),
+      implementation: Implementation(name: 'edax_mcp_server', version: '0.0.1'),
       libEdax: libEdax,
     );
 
