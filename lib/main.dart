@@ -6,7 +6,8 @@ import 'package:dart_mcp/stdio.dart';
 import 'package:libedax4dart/libedax4dart.dart';
 import 'package:path/path.dart' as p;
 
-base class EdaxMcpServer extends MCPServer with ToolsSupport {
+base class EdaxMcpServer extends MCPServer
+    with ToolsSupport, ResourcesSupport, PromptsSupport {
   final LibEdax libEdax;
 
   EdaxMcpServer(
@@ -15,6 +16,8 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
     required this.libEdax,
   }) : super.fromStreamChannel() {
     _registerTools();
+    _registerResources();
+    _registerPrompts();
   }
 
   void _registerTools() {
@@ -194,6 +197,112 @@ base class EdaxMcpServer extends MCPServer with ToolsSupport {
 
         return CallToolResult(
           content: <Content>[TextContent(text: buffer.toString().trim())],
+        );
+      },
+    );
+  }
+
+  void _registerResources() {
+    registerResource(
+      Resource(
+        uri: 'https://www.othello.gr.jp/r_info/rule.html',
+        name: '日本オセロ連盟競技ルール',
+        description: 'オセロの公式ルール、対局時計の使用方法、勝敗の記録方法など。',
+        mimeType: 'text/html',
+      ),
+      (request) async {
+        return ReadResourceResult(
+          contents: <TextResourceContents>[
+            TextResourceContents(
+              uri: 'https://www.othello.gr.jp/r_info/rule.html',
+              mimeType: 'text/plain',
+              text: '''
+日本オセロ連盟競技ルール概要:
+- 先手(黒)・後手(白)の決定は伏せ石で行う。
+- 対局時計を使用し、持ち時間は大会ごとに定める。
+- 着手は盤面に触れた時点で成立し、取り消しはできない。
+- 石を返す動作は片手で行う。
+- 勝敗は石数差で記録し、全滅(パーフェクト)の場合は64石差とする。
+- 時間切れは負けとなる。勝者は「2石差勝ち」か「勝手打ち」を選択できる。
+''',
+            ),
+          ],
+        );
+      },
+    );
+
+    registerResource(
+      Resource(
+        uri: 'http://blog.livedoor.jp/umigame_oth/',
+        name: '黒引き分け勝ち (オセロブログ)',
+        description: 'umigame氏によるオセロの戦略、序盤研究、ソフト(Edax)の使い方、対局反省などの記事。',
+        mimeType: 'text/html',
+      ),
+      (request) async {
+        return ReadResourceResult(
+          contents: <TextResourceContents>[
+            TextResourceContents(
+              uri: 'http://blog.livedoor.jp/umigame_oth/',
+              mimeType: 'text/plain',
+              text: '''
+黒引き分け勝ち (umigame氏のブログ) 概要:
+- オセロの技術的な考察や研究が中心。
+- Edaxの使い方、序盤研究(シャープコンポス、d8コンポス等)の記事がある。
+- 「Sigmoid損」という独自の指標を提案し、勝敗に直結するミスの評価を試みている。
+- 「黒引き分け勝ち(32-32で黒勝ち)」という条件が、色による有利不利を相殺するのに適当であるという説を提唱。
+''',
+            ),
+          ],
+        );
+      },
+    );
+
+    registerResource(
+      Resource(
+        uri: 'https://choi.lavox.net/stats/bw_win',
+        name: '統計的に見るオセロ (黒と白の勝率)',
+        description: 'WTHORファイルを用いた大量の対局データに基づく、黒番・白番の勝率統計。',
+        mimeType: 'text/html',
+      ),
+      (request) async {
+        return ReadResourceResult(
+          contents: <TextResourceContents>[
+            TextResourceContents(
+              uri: 'https://choi.lavox.net/stats/bw_win',
+              mimeType: 'text/plain',
+              text: '''
+統計的に見るオセロ (黒と白の勝率) 調査結果:
+- 調査対象: 約8万局の人間同士の対局データ。
+- 勝率: 黒 47.47%, 白 49.69%, 引分 2.84%。
+- 引き分けありの場合、白が約2%有利。
+- 引き分けなし(黒が引き分け勝ちの権利を持つ)の場合、ほぼ互角(黒勝利+引分 = 50.31%)。
+- 理論値(残り24マス時点)では黒がやや優勢だが、最終的に白が逆転する傾向がある。
+''',
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _registerPrompts() {
+    registerPrompt(
+      Prompt(
+        name: 'othello_knowledge',
+        description: 'オセロのルール、統計、戦略に関する知識をAIに提供するためのプロンプト。',
+        arguments: <PromptArgument>[],
+      ),
+      (request) async {
+        return GetPromptResult(
+          description: 'オセロに関する専門知識の活用',
+          messages: <PromptMessage>[
+            PromptMessage(
+              role: Role.user,
+              content: TextContent(
+                text: 'オセロのルール、勝率統計、または専門的な戦略について知りたいです。提供されているリソースを活用して説明してください。',
+              ),
+            ),
+          ],
         );
       },
     );
