@@ -6,6 +6,10 @@ Edax Reversi Engine MCP Server
 
 See: [lib/main.dart](./lib/main.dart)
 
+## resources
+
+See: [resources/docs](resources/docs)
+
 ## mcp client examples
 
 * https://geminicli.com/docs/reference/configuration/
